@@ -1,3 +1,5 @@
+import runner
+
 template nunitrun*(body: untyped) = 
   proc `nunitrun Task`*() = 
     when not declaredInScope(outputPath):
@@ -24,19 +26,18 @@ template nunitrun*(body: untyped) =
     proc getNunitPackageDir(dir: string): string = 
       let packagesDirs = dir.listDirs()
       for packageDir in packagesDirs:
-        if packageDir.contains("NUnit.Runners"):
+        if packageDir.contains("NUnit.Console"):
           result = packageDir      
 
     proc getNunitRunner(dir: string): string =
       let files = dir.listFiles()
       for file in files:        
-        if file.contains("nunit-console-x86.exe"):
+        if file.contains("nunit3-console.exe"):
           return file
-
 
     let nunitPackageDir = getNunitPackageDir(packagesDir)
 
-    let nunitRunnerExe = getNunitRunner(nunitPackageDir / "tools")
+    let nunitRunnerExe = getNunitRunner(nunitPackageDir / "bin")
 
     var assembliesList = ""
     for test in tests(assembliesDir):
@@ -45,8 +46,6 @@ template nunitrun*(body: untyped) =
 
     echo assembliesList
 
-    let nunitCmd = "$1 $2 /framework=v4.0.30319 /xml=$3\\NUnit_report.xml /nologo /process=Single" % [nunitRunnerExe, assembliesList, assembliesDir]
+    let nunitCmd = "$1 $2 /framework=net-4.5 /result=$3\\NUnit_report.xml /noheader -x86" % [nunitRunnerExe, assembliesList, assembliesDir]
 
-    echo nunitCmd
-    exec(nunitCmd)
-
+    echo run nunitCmd
