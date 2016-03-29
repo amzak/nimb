@@ -1,23 +1,17 @@
 import os
 import osproc
 import marshal
-
-type
-  ExecResult = object
-    code: int
-    output: string
+import strutils
 
 var cmd = ""
 let params = commandLineParams()
 
 if params.len() == 0:
-  let execResult = ExecResult(code: 1, output: "missing execution command")  
-  quit ($$execResult, execResult.code)
+  quit ("missing execution command", 1)
 
-cmd = params[0]
+let fullCmd = params[0]
 
-let (output, code) = execCmdEx(cmd)
+let (output, code) = execCmdEx(fullCmd)
 
-let execResult = ExecResult(code: code, output: output)
-
-echo $$execResult
+echo code
+echo output
