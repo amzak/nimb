@@ -6,6 +6,8 @@ var buildFile = "nimbfile.nims"
 let params = commandLineParams()
 
 if params.len() > 0:
+  if params[0] == "-utilpath":
+    quit getAppDir() / "utils"
   buildFile = params[0]
 
 if not existsFile(buildFile):
@@ -13,7 +15,7 @@ if not existsFile(buildFile):
 
 let imports = getAppDir() / "tasks"
 
-let cmd = "nim --hints:off --lineDir:off --colors:on --path:$2 build $1" % [buildFile, imports]
+let cmd = "nim --hints:off --lineDir:off --colors:on --path:$1 build $2" % [imports, buildFile]
 
 let (output, code) = execCmdEx(cmd)
 
