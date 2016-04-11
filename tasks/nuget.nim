@@ -1,4 +1,5 @@
 import strutils
+import runner
 
 template nugetpack*(body: untyped) = 
   proc `nugetpack Task`*() = 
