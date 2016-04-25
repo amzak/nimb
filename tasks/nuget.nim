@@ -1,4 +1,5 @@
 import strutils
+import ospaths
 import runner
 
 template nugetpack*(body: untyped) = 
@@ -47,14 +48,14 @@ template nugetpack*(body: untyped) =
 </package>
       """ % [packageId, packageVersion, title, authors, description, filesXml]
 
-    mkDir(outputDir)
+    makeDir(outputDir)
     
     for part in parts:
       let nuspecDir = binariesDir / part / packageId & ".nuspec"
       writeFile(nuspecDir, xml)
-      let nugetCmd = nugetExecutable & " pack \"$1\" -OutputDirectory \"$2\"" % [nuspecDir, outputDir]
+      let nugetCmd = nugetExecutable & " pack \\\"$1\\\" -OutputDirectory \\\"$2\\\"" % [nuspecDir, outputDir]
       echo nugetCmd
-      echo staticExec(nugetCmd)
+      echo run nugetCmd
 
 proc add*(param: string): string= 
   result = "src=$1" % [param]
@@ -64,3 +65,23 @@ proc add*(str: string, param: string): string=
 
 proc exclude*(str: string, param: string): string= 
   result = str & " exclude=$1" % [param]
+
+template nugetpush*(body: untyped) = 
+  proc `nugetpush Task`*() = 
+    when not declaredInScope(packageId):
+      var nugetExecutable {.inject.}: string
+      var fromDir {.inject.}: string
+      var repoUrl {.inject.}: string
+      var repoKey {.inject.}: string
+
+    proc `nugetpack Body`() = body
+    `nugetpack Body`()
+
+    let files = fromDir.listFiles();
+
+    for file in files:
+      var (dir, name, ext) = splitFile(file)
+      if ext != ".nupkg":
+        continue
+      let nugetCmd = nugetExecutable & " push \\\"$1\\\" $2 -s $3" % [file, repoKey, repoUrl]
+      echo run nugetCmd

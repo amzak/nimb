@@ -6,7 +6,7 @@ import strutils
 var cmd = ""
 let params = commandLineParams()
 
-echo params
+#echo params
 
 if params.len() == 0:
   quit ("missing execution command", 1)
