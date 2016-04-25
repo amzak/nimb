@@ -85,3 +85,15 @@ template nugetpush*(body: untyped) =
         continue
       let nugetCmd = nugetExecutable & " push \\\"$1\\\" $2 -s $3" % [file, repoKey, repoUrl]
       echo run nugetCmd
+
+template nugetrestore*(body: untyped) = 
+  proc `nugetrestore Task`*() = 
+    when not declaredInScope(packageId):
+      var nugetExecutable {.inject.}: string
+      var dir {.inject.}: string
+
+    proc `nugetpack Body`() = body
+    `nugetpack Body`()
+
+    let nugetCmd = nugetExecutable & " restore " & dir
+    echo run nugetCmd
