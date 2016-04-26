@@ -1,9 +1,19 @@
 # nimb
 Ongoing attempt to make a decent, good looking build script system, based on Nim-language.
 
+##Installation
+1. Install Nim compiler
+2. Checkout nimb repo
+3. Execute:
+```
+nim c nimb.nim
+nim c utils\nimbexec.nim
+```
+Add nimb dir to PATH
+
 ##Usage
 
-1. Install, add to PATH
+1. Install
 2. Create nimbfile.nims file in project root
 3. Write some code to nims file
 4. Run nimb command in project root
