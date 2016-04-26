@@ -15,6 +15,12 @@ Supports only c# related tasks for now.
 ##Tasks
 
 ###assemblyInfo
+```
+assemblyinfoOf:
+  outputPath = solutionDir
+  asmVersion = thisVersion
+  copyright = "Copyright ©"
+```
 ###nugetpack
 ```
 nugetpack:
