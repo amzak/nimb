@@ -18,10 +18,6 @@ Add nimb dir to PATH
 3. Write some code to nims file
 4. Run nimb command in project root
 
-##Limitations
-
-Supports only c# related tasks for now.
-
 ##Tasks
 
 ###assemblyInfo
