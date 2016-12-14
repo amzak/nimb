@@ -8,6 +8,19 @@ type
     hash* : string
     isDirty* : bool
 
+proc `$`* (version: Version): string =
+  result = "$1.$2.$3-$4" % [version.major, version.minor, version.patch, version.hash]
+  if version.isDirty:
+    result &= "-dirty"
+
+proc shortWithDirty* (version: Version): string =
+  result = "$1.$2.$3" % [version.major, version.minor, version.patch]
+  if version.isDirty:
+    result &= "-dirty"
+
+proc short* (version: Version): string =
+  result = "$1.$2.$3" % [version.major, version.minor, version.patch]
+
 # parsing output. It looks like: v1.0-0-g69d5874d6aa1cbfd2ef5d5205162b872cccb0471-dirty
 proc getVersion*(): Version = 
   let output = staticExec("git describe --abbrev=64 --first-parent --long --dirty --always")
@@ -28,16 +41,5 @@ proc getVersion*(): Version =
     let splitMinor = output.split('-')
     result = Version(major: "0", minor: "0", patch: "0", hash: hash)
     result.isDirty = splitMinor.len() > 3
+  echo "detected version: $1" % [$result]
 
-proc `$`* (version: Version): string =
-  result = "$1.$2.$3-$4" % [version.major, version.minor, version.patch, version.hash]
-  if version.isDirty:
-    result &= "-dirty"
-
-proc shortWithDirty* (version: Version): string =
-  result = "$1.$2.$3" % [version.major, version.minor, version.patch]
-  if version.isDirty:
-    result &= "-dirty"
-
-proc short* (version: Version): string =
-  result = "$1.$2.$3" % [version.major, version.minor, version.patch]

@@ -2,10 +2,9 @@ import ospaths
 import strutils
 
 proc run*(cmd: string): string =
+  echo "executing: " & cmd
   let utilPath = staticExec("nimb -utilpath").strip()
   let utilCmd = utilpath / "nimbexec.exe \"$1\"" % [cmd]
-
-  echo utilCmd
 
   let resultOutput = staticExec(utilCmd)
   
