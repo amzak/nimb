@@ -83,8 +83,9 @@ template nugetpush*(body: untyped) =
       var (dir, name, ext) = splitFile(file)
       if ext != ".nupkg":
         continue
-      let nugetCmd = nugetExecutable & " push \\\"$1\\\" $2 -s $3" % [file, repoKey, repoUrl]
+      let nugetCmd = nugetExecutable & " push \\\"$1\\\" -ApiKey $2 -Source $3" % [file, repoKey, repoUrl]
       echo run nugetCmd
+      echo "completed."
 
 template nugetrestore*(body: untyped) = 
   proc `nugetrestore Task`*() = 
