@@ -11,6 +11,7 @@ template nugetpack*(body: untyped) =
       var title {.inject.}: string
       var binariesDir {.inject.}: string
       var parts {.inject.}: seq[string]
+      var prefix {.inject.}: string
       var authors {.inject.}: string
       var description {.inject.}: string
       var files {.inject.}: seq[string]
@@ -30,31 +31,33 @@ template nugetpack*(body: untyped) =
     for item in items(files):
       filesXml.add(spaces(12) & "<file $1 target=''/>\n" % [item.fillWithQuotes()])
 
-    var xml = 
-      """
-<?xml version='1.0'?>
-<package xmlns='http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd'>
-    <metadata>
-        <id>$1</id>
-        <version>$2</version>
-        <title>$3</title>
-        <authors>$4</authors>
-        <description>$5</description>
-        <releaseNotes/>
-        <copyright/>
-    </metadata> 
-    <files>$6
-    </files>
-</package>
-      """ % [packageId, packageVersion, title, authors, description, filesXml]
-
     makeDir(outputDir)
     
+    let xmlTemplate = """
+<?xml version='1.0'?>
+<package xmlns='http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd'>
+  <metadata>
+      <id>$1</id>
+      <version>$2</version>
+      <title>$3</title>
+      <authors>$4</authors>
+      <description>$5</description>
+      <releaseNotes/>
+      <copyright/>
+  </metadata> 
+  <files>$6
+  </files>
+</package>
+    """
+
     for part in parts:
-      let nuspecDir = binariesDir / part / packageId & ".nuspec"
+      let fullPackageId = prefix & "." & part;
+      let xml = xmlTemplate % [fullPackageId, packageVersion, title, authors, description, filesXml]
+      let nuspecDir = binariesDir / part / fullPackageId & ".nuspec"
+      echo "creating .nuspec for $1 in $2..." % [part, nuspecDir]
       writeFile(nuspecDir, xml)
+      echo "created .nuspec for $1 packing..." % [part]
       let nugetCmd = nugetExecutable & " pack \\\"$1\\\" -OutputDirectory \\\"$2\\\"" % [nuspecDir, outputDir]
-      echo nugetCmd
       echo run nugetCmd
 
 proc add*(param: string): string= 
