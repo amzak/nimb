@@ -86,6 +86,9 @@ template nugetpush*(body: untyped) =
       var (dir, name, ext) = splitFile(file)
       if ext != ".nupkg":
         continue
+      if name.contains("dirty"):
+        echo "nuget $1 is dirty, nugetpush ignored" % [name]
+        continue
       let nugetCmd = nugetExecutable & " push \\\"$1\\\" -ApiKey $2 -Source $3" % [file, repoKey, repoUrl]
       echo run nugetCmd
       echo "completed."
