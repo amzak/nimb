@@ -1,8 +1,11 @@
-const
-  msbuildExe* = "C:\\Program Files (x86)\\MSBuild\\14.0\\Bin\\MSBuild.exe"
+import ospaths
 
 proc toSln*(filename: string): string =
   filename & ".sln"
 
 proc orDefault*(param, default: string): string= 
   result = if param == "": default else: param
+
+proc toAbsolutePath*(path: string): string =
+  let scriptPath = getEnv("nimbfilePath")
+  result = scriptPath / path

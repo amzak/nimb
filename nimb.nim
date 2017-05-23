@@ -10,7 +10,10 @@ if params.len() > 0:
     quit getAppDir() / "utils"
   buildFile = params[params.len() - 1]
 
-let nimbfilePath = getCurrentDir() / buildFile
+let currDir = getCurrentDir()
+putEnv("nimbfilePath", currDir)
+
+let nimbfilePath = currDir / buildFile
 echo "Nimbfile path: " & nimbfilePath
 
 if not existsFile(nimbfilePath):

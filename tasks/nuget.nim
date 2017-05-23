@@ -1,6 +1,7 @@
 import strutils
 import ospaths
 import runner
+import buildtools
 
 template nugetpack*(body: untyped) = 
   proc `nugetpack Task`*() = 
@@ -53,11 +54,11 @@ template nugetpack*(body: untyped) =
     for part in parts:
       let fullPackageId = prefix & "." & part;
       let xml = xmlTemplate % [fullPackageId, packageVersion, title, authors, description, filesXml]
-      let nuspecDir = binariesDir / part / fullPackageId & ".nuspec"
+      let nuspecDir = binariesDir.toAbsolutePath / part / fullPackageId & ".nuspec"
       echo "creating .nuspec for $1 in $2..." % [part, nuspecDir]
       writeFile(nuspecDir, xml)
       echo "created .nuspec for $1 packing..." % [part]
-      let nugetCmd = nugetExecutable & " pack \\\"$1\\\" -OutputDirectory \\\"$2\\\"" % [nuspecDir, outputDir]
+      let nugetCmd = nugetExecutable & " pack \\\"$1\\\" -OutputDirectory \\\"$2\\\"" % [nuspecDir, outputDir.toAbsolutePath]
       echo run nugetCmd
 
 proc add*(param: string): string= 
@@ -80,7 +81,7 @@ template nugetpush*(body: untyped) =
     proc `nugetpack Body`() = body
     `nugetpack Body`()
 
-    let files = fromDir.listFiles();
+    let files = fromDir.toAbsolutePath.listFiles();
 
     for file in files:
       var (dir, name, ext) = splitFile(file)
@@ -102,5 +103,5 @@ template nugetrestore*(body: untyped) =
     proc `nugetpack Body`() = body
     `nugetpack Body`()
 
-    let nugetCmd = nugetExecutable & " restore " & dir
+    let nugetCmd = nugetExecutable & " restore " & dir.toAbsolutePath
     echo run nugetCmd
