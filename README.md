@@ -1,7 +1,7 @@
 # nimb
 Ongoing attempt to make a decent, good looking build script system, based on Nim-language.
 
-##Installation
+## Installation
 1. Install Nim compiler
 2. Checkout nimb repo
 3. Execute:
@@ -11,23 +11,23 @@ nim c utils\nimbexec.nim
 ```
 Add nimb dir to PATH
 
-##Usage
+## Usage
 
 1. Install
 2. Create nimbfile.nims file in project root
 3. Write some code to nims file
 4. Run nimb command in project root
 
-##Tasks
+## Tasks
 
-###assemblyInfo
+### assemblyInfo
 ```
 assemblyinfoOf:
   outputPath = solutionDir
   asmVersion = thisVersion
   copyright = "Copyright ©"
 ```
-###nugetpack
+### nugetpack
 ```
 nugetpack:
   nugetExecutable = nugetExe
@@ -46,7 +46,7 @@ nugetpack:
   ]
   outputDir = artifactsDir
 ```
-###nugetpush
+### nugetpush
 ```
 nugetpush:
   nugetExecutable = nugetExe
@@ -54,13 +54,13 @@ nugetpush:
   repoUrl = "your_repo_url"
   repoKey = "your_repo_key"
 ```
-###nugetrestore
+### nugetrestore
 ```
 nugetrestore:
   nugetExecutable = nugetExe
   dir = solutionDir
 ```
-###nunitrun
+### nunitrun
 ```
 nunitrun:
   assembliesDir = testsDir
