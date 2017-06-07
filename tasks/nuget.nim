@@ -17,6 +17,8 @@ template nugetpack*(body: untyped) =
       var description {.inject.}: string
       var files {.inject.}: seq[string]
       var outputDir {.inject.}: string
+      var dotnetcoreProject {.inject.}: bool
+      var framework {.inject.}: string
 
     proc `nugetpack Body`() = body
     `nugetpack Body`()
@@ -54,7 +56,13 @@ template nugetpack*(body: untyped) =
     for part in parts:
       let fullPackageId = prefix & "." & part;
       let xml = xmlTemplate % [fullPackageId, packageVersion, title, authors, description, filesXml]
-      let nuspecDir = binariesDir.toAbsolutePath / part / fullPackageId & ".nuspec"
+      var nuspecDir = binariesDir.toAbsolutePath / part
+
+      if dotnetcoreProject:
+        nuspecDir = nuspecDir / framework
+
+      nuspecDir = nuspecDir / fullPackageId & ".nuspec"
+
       echo "creating .nuspec for $1 in $2..." % [part, nuspecDir]
       writeFile(nuspecDir, xml)
       echo "created .nuspec for $1 packing..." % [part]
