@@ -26,3 +26,5 @@ let cmd = "nim --hints:off --lineDir:off --colors:on --path:$1 build $2" % [impo
 let (output, code) = execCmdEx(cmd)
 
 echo output
+
+programResult = code

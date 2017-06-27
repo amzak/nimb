@@ -14,3 +14,5 @@ let (output, code) = execCmdEx(fullCmd)
 
 echo code
 echo output
+
+programResult = code
