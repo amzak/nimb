@@ -25,7 +25,7 @@ proc short* (version: Version): string =
 # parsing output. It looks like: v1.0-0-g69d5874d6aa1cbfd2ef5d5205162b872cccb0471-dirty
 proc getVersion*(): Version = 
   let scriptPath = getEnv("nimbfilePath")
-  let output = staticExec("git -C $1 describe --abbrev=64 --first-parent --long --dirty --always" % scriptPath)
+  let output = runAbs("git -C $1 describe --abbrev=64 --first-parent --long --dirty --always" % scriptPath)
   echo "git output: " & output
 
   let splitMajor = output.split('.')
