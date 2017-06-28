@@ -6,13 +6,11 @@ proc run(path:string, cmd: string): string =
   let utilPath = staticExec("nimb -utilpath").strip()  
   let utilCmd = utilpath / "nimbexec.exe \"$1\"" % [path / cmd]
 
-  echo "util cmd: " & utilCmd
-
   let resultOutput = staticExec(utilCmd)
   
   let lines = resultOutput.splitLines()
   let code = parseInt(lines[0])
-  let output = lines[1]
+  let output = lines[1..lines.len-1].join("\n")
 
   if code>0:
     raise newException(Exception, "Command $1 execution failed with code $2 and output:\r\n $3" % [cmd, $code, output])
