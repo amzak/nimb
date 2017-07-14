@@ -1,7 +1,8 @@
-import runner
 import buildtools
+import ../tools/runner
+import ../contexts
 
-template nunitrun*(body: untyped) = 
+template nunitrun*(context: TaskContext; body: untyped) = 
   proc `nunitrun Task`*() = 
     when not declaredInScope(outputPath):
       var assembliesDir {.inject.}: string
@@ -57,4 +58,4 @@ template nunitrun*(body: untyped) =
 
     let nunitCmd = "$1 $2 /framework=net-4.5 /result=$3\\NUnit_report.xml /noheader -x86" % [nunitRunnerExe, assembliesList, assembliesDir]
 
-    echo run nunitCmd
+    echo run(nunitCmd, context.err)

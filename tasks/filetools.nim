@@ -1,33 +1,30 @@
 import strutils
 
-proc removeDir*(dir: string) = 
-  echo "test"
-  proc removeDirSafe(dir: string) = 
-    echo "removed $1" % [dir]
-    let dirs = listDirs(dir)
+proc removeDir*(dir: string; errors: var seq[string]) = 
+  let dirs = listDirs(dir)
 
-    for dir in dirs:
-      try:
-        removeDirSafe(dir)
-        rmDir(dir)
-      except: continue
+  for dir in dirs:
+    try:
+      removeDir(dir, errors)
+      rmDir(dir)
+    except: 
+      errors.add("can't remove $1" % [dir])
+      continue
 
-    let files = listFiles(dir)
+  let files = listFiles(dir)
 
-    for file in files:
-      try:
-        rmFile(file)
-      except: continue
+  for file in files:
+    try:
+      rmFile(file)
+    except: 
+      errors.add("can't remove $1" % [file])
+      continue
 
-  removeDirSafe(dir)
-
-proc makeDir*(dir: string) = 
+proc makeDir*(dir: string; errors: var seq[string]) = 
   if existsDir(dir):
-    echo "dir $1 already exists" % [dir]    
     return
 
   try:
     mkDir dir
-    echo "created dir $1" % [dir]    
   except:
-    echo "can't create $1 dir" % [dir]    
+    errors.add("can't create $1 dir" % [dir])

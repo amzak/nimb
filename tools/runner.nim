@@ -1,8 +1,7 @@
 import ospaths
 import strutils
 
-proc run(path:string, cmd: string): string =
-  echo "executing: " & cmd
+proc run(path:string; cmd: string; errors: var seq[string]): string =
   let utilPath = staticExec("nimb -utilpath").strip()  
   let utilCmd = utilpath / "nimbexec.exe \"$1\"" % [path / cmd]
 
@@ -13,16 +12,16 @@ proc run(path:string, cmd: string): string =
   let output = lines[1..lines.len-1].join("\n")
 
   if code>0:
-    raise newException(Exception, "Command $1 execution failed with code $2 and output:\r\n $3" % [cmd, $code, output])
+    errors.add(output)
 
   return output
 
-proc run*(cmd: string): string =
+proc run*(cmd: string; errors: var seq[string]): string =
   let scriptPath = getEnv("nimbfilePath")
-  run(scriptPath, cmd)
+  run(scriptPath, cmd, errors)
 
-proc runAbs*(cmd: string): string =
-  run("", cmd)
+proc runAbs*(cmd: string; errors: var seq[string]): string =
+  run("", cmd, errors)
 
-proc quote*(str: string): string =
+proc quote*(str: string; errors: var seq[string]): string =
   return "\"$1\"" % [str]

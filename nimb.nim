@@ -14,7 +14,7 @@ let currDir = getCurrentDir()
 putEnv("nimbfilePath", currDir)
 
 let nimbfilePath = currDir / buildFile
-echo "Nimbfile path: " & nimbfilePath
+echo "nimbfile path: " & nimbfilePath
 
 if not existsFile(nimbfilePath):
   quit("error: nimb file not found", 1)

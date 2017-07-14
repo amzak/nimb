@@ -1,5 +1,5 @@
 import strutils
-import runner
+import ../tools/runner
 
 type
   Version* = object
@@ -25,8 +25,8 @@ proc short* (version: Version): string =
 # parsing output. It looks like: v1.0-0-g69d5874d6aa1cbfd2ef5d5205162b872cccb0471-dirty
 proc getVersion*(): Version = 
   let scriptPath = getEnv("nimbfilePath")
-  let output = runAbs("git -C $1 describe --abbrev=64 --first-parent --long --dirty --always" % scriptPath)
-  echo "git output: " & output
+  var errors: seq[string] = @[]
+  let output = runAbs("git -C $1 describe --abbrev=64 --first-parent --long --dirty --always" % scriptPath, errors)
 
   let splitMajor = output.split('.')
 
@@ -44,5 +44,4 @@ proc getVersion*(): Version =
     let splitMinor = output.split('-')
     result = Version(major: "0", minor: "0", patch: "0", hash: hash)
     result.isDirty = splitMinor.len() > 3
-  echo "detected version: $1" % [$result]
 

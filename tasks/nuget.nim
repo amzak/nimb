@@ -1,9 +1,13 @@
 import strutils
 import ospaths
-import runner
+import ../tools/runner
 import buildtools
+import ../contexts
 
-template nugetpack*(body: untyped) = 
+proc logInfo*(self: TaskContext, msg: string): untyped = 
+  self.info.add(msg)
+
+template nugetpack*(context: TaskContext; body: untyped) = 
   proc `nugetpack Task`*() = 
     when not declaredInScope(packageId):
       var nugetExecutable {.inject.}: string
@@ -33,8 +37,8 @@ template nugetpack*(body: untyped) =
     var filesXml = "\n"
     for item in items(files):
       filesXml.add(spaces(12) & "<file $1 target=''/>\n" % [item.fillWithQuotes()])
-
-    makeDir(outputDir)
+    
+    makeDir(outputDir, context.err)
     
     let xmlTemplate = """
 <?xml version='1.0'?>
@@ -63,11 +67,12 @@ template nugetpack*(body: untyped) =
 
       nuspecDir = nuspecDir / fullPackageId & ".nuspec"
 
-      echo "creating .nuspec for $1 in $2..." % [part, nuspecDir]
+      context.logInfo("creating .nuspec for $1 in $2..." % [part, nuspecDir])
+
       writeFile(nuspecDir, xml)
-      echo "created .nuspec for $1 packing..." % [part]
+      context.logInfo("created .nuspec for $1 packing..." % [part])
       let nugetCmd = nugetExecutable & " pack \\\"$1\\\" -OutputDirectory \\\"$2\\\"" % [nuspecDir, outputDir.toAbsolutePath]
-      echo run nugetCmd
+      context.logInfo(run(nugetCmd, context.err))
 
 proc add*(param: string): string= 
   result = "src=$1" % [param]
@@ -78,7 +83,7 @@ proc add*(str: string, param: string): string=
 proc exclude*(str: string, param: string): string= 
   result = str & " exclude=$1" % [param]
 
-template nugetpush*(body: untyped) = 
+template nugetpush*(context: TaskContext; body: untyped) = 
   proc `nugetpush Task`*() = 
     when not declaredInScope(packageId):
       var nugetExecutable {.inject.}: string
@@ -96,13 +101,12 @@ template nugetpush*(body: untyped) =
       if ext != ".nupkg":
         continue
       if name.contains("dirty"):
-        echo "nuget $1 is dirty, nugetpush ignored" % [name]
+        context.logInfo("nuget $1 is dirty, nugetpush ignored" % [name])
         continue
       let nugetCmd = nugetExecutable & " push \\\"$1\\\" -ApiKey $2 -Source $3" % [file, repoKey, repoUrl]
-      echo run nugetCmd
-      echo "completed."
+      context.logInfo(run(nugetCmd, context.err))
 
-template nugetrestore*(body: untyped) = 
+template nugetrestore*(context: TaskContext; body: untyped) = 
   proc `nugetrestore Task`*() = 
     when not declaredInScope(packageId):
       var nugetExecutable {.inject.}: string
@@ -112,4 +116,4 @@ template nugetrestore*(body: untyped) =
     `nugetpack Body`()
 
     let nugetCmd = nugetExecutable & " restore " & dir.toAbsolutePath
-    echo run nugetCmd
+    context.logInfo(run(nugetCmd, context.err))
