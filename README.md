@@ -69,8 +69,6 @@ nimbTask nunitrun:
 
 # Example
 ```
-mode = ScriptMode.Verbose;
-
 import ospaths
 import strutils
 import buildtools
