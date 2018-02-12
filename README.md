@@ -22,14 +22,14 @@ Add nimb dir to PATH
 
 ### assemblyInfo
 ```
-assemblyinfoOf:
+nimbTask assemblyinfoOf:
   outputPath = solutionDir
   asmVersion = thisVersion
   copyright = "Copyright ©"
 ```
 ### nugetpack
 ```
-nugetpack:
+nimbTask nugetpack:
   nugetExecutable = nugetExe
   packageId = "you_package_name"
   packageVersion = thisVersion.shortWithDirty
@@ -48,7 +48,7 @@ nugetpack:
 ```
 ### nugetpush
 ```
-nugetpush:
+nimbTask nugetpush:
   nugetExecutable = nugetExe
   fromDir = artifactsDir
   repoUrl = "your_repo_url"
@@ -56,13 +56,13 @@ nugetpush:
 ```
 ### nugetrestore
 ```
-nugetrestore:
+nimbTask nugetrestore:
   nugetExecutable = nugetExe
   dir = solutionDir
 ```
 ### nunitrun
 ```
-nunitrun:
+nimbTask nunitrun:
   assembliesDir = testsDir
   packagesDir = nugetPackagesDir
 ```
@@ -103,12 +103,12 @@ const
 
   thisVersion = getVersion()
 
-assemblyinfoOf:
+nimbTask assemblyinfoOf:
   outputPath = solutionDir
   asmVersion = thisVersion
   copyright = "Copyright ©"
 
-nugetpack:
+nimbTask nugetpack:
   nugetExecutable = nugetExe
   packageId = "CompanyX." & solutionName
   packageVersion = thisVersion.shortWithDirty
@@ -125,32 +125,32 @@ nugetpack:
   ]
   outputDir = artifactsDir
 
-nugetpush:
+nimbTask nugetpush:
   nugetExecutable = nugetExe
   fromDir = artifactsDir
   repoUrl = "your_repo_url"
   repoKey = "your_repo_key"
 
-nugetrestore:
+nimbTask nugetrestore:
   nugetExecutable = nugetExe
   dir = solutionDir
 
-nunitrun:
+nimbTask nunitrun:
   assembliesDir = testsDir
   packagesDir = nugetPackagesDir
 
-task cleanBuildFolder, "Create clean build folder structure":
+nimbTask cleanBuildFolder:
   removeDir buildsDir
   makeDir buildsDir
 
-task compile, "Compile without restoring deps and versioning":
-  echo run msbuildExe & " \\\"$1\\\" /verbosity:quiet /nologo /target:Clean;Build /p:Configuration=Release" % [solutionFile]
+nimbTask dotnetbuild:
+  slnFile = solutionFile
 
-task build, "":
+nimbExecute:
   call nugetrestore
   call cleanBuildFolder
   call assemblyinfoOf
-  call compile
+  call dotnetbuild
   call nunitrun
   call nugetpack
   call nugetpush
