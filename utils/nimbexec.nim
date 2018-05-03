@@ -6,7 +6,7 @@ import strutils
 let params = commandLineParams()
 
 if params.len() == 0:
-  quit ("missing execution command", 1)
+  quit("missing execution command", QuitFailure)
 
 let fullCmd = params[0]
 
