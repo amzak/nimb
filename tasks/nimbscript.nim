@@ -10,7 +10,7 @@ template getContext(name: untyped): TaskContext =
   getOrAddContext(taskName)
 
 template call*(name: untyped) =
-  if not globalContext().stop:    
+  if not globalContext().stop:
     var taskContext = getContext(name)
     let before = getTicks()
     `name Task`()

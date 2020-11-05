@@ -2,12 +2,15 @@ import strutils
 import ../tools/runner
 
 type
-  Version* = object
+  Version* = object of RootObj
     major* : string
     minor* : string
     patch* : string
     hash* : string
     isDirty* : bool
+
+  ErrorVersion* = object of Version
+    errors*: seq[string]
 
 proc `$`* (version: Version): string =
   result = "$1.$2.$3-$4" % [version.major, version.minor, version.patch, version.hash]
@@ -27,6 +30,9 @@ proc getVersion*(): Version =
   let scriptPath = getEnv("nimbfilePath")
   var errors: seq[string] = @[]
   let output = runAbs("git -C $1 describe --abbrev=64 --first-parent --long --dirty --always" % scriptPath, errors)
+
+  if errors.len > 0:
+    return ErrorVersion(errors: errors)
 
   let splitMajor = output.split('.')
 
